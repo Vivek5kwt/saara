@@ -11,8 +11,10 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
+  late final Animation<double> _bgFade; // fades in the background image
   late final Animation<double> _logoFade; // fades in the logo image
   late final Animation<double> _logoScale; // pops the logo
+  late final Animation<double> _logoRotate; // slight rotation for flair
 
   @override
   void initState() {
@@ -23,13 +25,22 @@ class _SplashPageState extends State<SplashPage>
       duration: const Duration(milliseconds: 1500),
     );
 
+    _bgFade = CurvedAnimation(
+      parent: _ctrl,
+      curve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+    );
+
     _logoFade = CurvedAnimation(
       parent: _ctrl,
-      curve: Curves.easeIn,
+      curve: const Interval(0.3, 1.0, curve: Curves.easeIn),
     );
 
     _logoScale = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack),
+    );
+
+    _logoRotate = Tween<double>(begin: -0.05, end: 0.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
     );
 
     _ctrl.forward();
@@ -57,18 +68,24 @@ class _SplashPageState extends State<SplashPage>
           return Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(
-                'assets/images/splash_bg.png',
-                fit: BoxFit.cover,
+              FadeTransition(
+                opacity: _bgFade,
+                child: Image.asset(
+                  'assets/images/splash_bg.png',
+                  fit: BoxFit.cover,
+                ),
               ),
               Center(
                 child: FadeTransition(
                   opacity: _logoFade,
                   child: ScaleTransition(
                     scale: _logoScale,
-                    child: Image.asset(
-                      'assets/images/splash_logo.png',
-                      width: 160,
+                    child: RotationTransition(
+                      turns: _logoRotate,
+                      child: Image.asset(
+                        'assets/images/splash_logo.png',
+                        width: 160,
+                      ),
                     ),
                   ),
                 ),
