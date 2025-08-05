@@ -87,9 +87,11 @@ class _ExploreView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primaryPurple = Color(0xFFA78BFA);
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      children: [
+    return SafeArea(
+      child: ListView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+        children: [
         // --- Big “May Challenge” card ---
         GestureDetector(
           onTap: onVideoTap,
@@ -102,6 +104,20 @@ class _ExploreView extends StatelessWidget {
                   fit: BoxFit.cover,
                   height: 200,
                   width: double.infinity,
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.1),
+                          Colors.black.withOpacity(0.6),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 Positioned(
                   top: 16,
@@ -245,7 +261,7 @@ class _ExploreView extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 160,
+          height: 200,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: const [
@@ -272,7 +288,8 @@ class _ExploreView extends StatelessWidget {
 
         const SizedBox(height: 24),
       ],
-    );
+    ),
+  );
   }
 }
 
@@ -364,21 +381,41 @@ class _ProgramCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 240,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(image,
-                  height: 120, width: 240, fit: BoxFit.cover)),
-          const SizedBox(height: 8),
-          Text(title,
-              style:
-              const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 4),
-          Text(subtitle,
-              style: const TextStyle(color: Colors.black54, fontSize: 14)),
-        ],
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              image,
+              height: 130,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style:
+                        const TextStyle(color: Colors.black54, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
