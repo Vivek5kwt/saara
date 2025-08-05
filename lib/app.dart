@@ -11,6 +11,7 @@ import 'features/login/view/login_page.dart';
 import 'features/video/view/video_page.dart';
 import 'features/onboarding/view/onboarding_page.dart';
 import 'features/splash/view/splash_page.dart';
+import 'features/forgot_password/view/forgot_password_page.dart';
 
 /// A ChangeNotifier that listens to a Stream and notifies listeners on each event.
 /// Replacement for the removed GoRouterRefreshStream helper.
@@ -58,6 +59,10 @@ class App extends StatelessWidget {
                 GoRoute(
                   path: '/login',
                   builder: (context, state) => const LoginPage(),
+                ),
+                GoRoute(
+                  path: '/forgot-password',
+                  builder: (context, state) => const ForgotPasswordPage(),
                 ),
                 GoRoute(
                   path: '/',

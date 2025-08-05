@@ -387,13 +387,13 @@ class _ProgramCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              image,
-              height: 130,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            Expanded(
+              child: Image.asset(
+                image,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8),
