@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,23 @@ import 'features/auth/repository/auth_repository.dart';
 import 'features/home/view/home_page.dart';
 import 'features/login/view/login_page.dart';
 import 'features/video/view/video_page.dart';
+
+/// A ChangeNotifier that listens to a Stream and notifies listeners on each event.
+/// Replacement for the removed GoRouterRefreshStream helper.
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    // immediately notify so GoRouter reads initial auth state
+    notifyListeners();
+    _sub = stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+  late final StreamSubscription<dynamic> _sub;
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -41,7 +60,8 @@ class App extends StatelessWidget {
               redirect: (context, state) {
                 final loggedIn =
                     authBloc.state.status == AuthStatus.authenticated;
-                final loggingIn = state.subloc == '/login';
+                // use matchedLocation instead of the removed subloc
+                final loggingIn = state.matchedLocation == '/login';
 
                 if (!loggedIn) return loggingIn ? null : '/login';
                 if (loggingIn) return '/';
@@ -59,4 +79,3 @@ class App extends StatelessWidget {
     );
   }
 }
-
