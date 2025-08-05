@@ -20,11 +20,27 @@ class _HomePageState extends State<HomePage> {
       Center(child: Text('Searches Page')),
       Center(child: Text('Settings Page')),
     ];
+    final titles = ['Explore', 'Classes', 'Searches', 'Settings'];
 
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: const [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text('Menu'),
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Explore'),
+        title: Text(titles[_currentIndex]),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none),
