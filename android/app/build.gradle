@@ -5,6 +5,13 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+java {
+    // Use JDK 17 for all Java compilation tasks.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 android {
     namespace = "com.example.saara"
     compileSdk = flutter.compileSdkVersion
