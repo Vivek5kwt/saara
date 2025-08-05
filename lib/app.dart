@@ -80,12 +80,17 @@ class App extends StatelessWidget {
                 final loggingIn = loc == '/login';
                 final splash = loc == '/splash';
                 final onboarding = loc == '/onboarding';
+                final forgotPassword = loc == '/forgot-password';
 
                 if (!loggedIn) {
-                  if (loggingIn || splash || onboarding) return null;
+                  if (loggingIn || splash || onboarding || forgotPassword) {
+                    return null;
+                  }
                   return '/login';
                 }
-                if (loggingIn || splash || onboarding) return '/';
+                if (loggingIn || splash || onboarding || forgotPassword) {
+                  return '/';
+                }
                 return null;
               },
             );
