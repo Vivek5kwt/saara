@@ -15,14 +15,36 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Yoga Home'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.read<AuthBloc>().add(AuthLogoutRequested());
-            },
-            icon: const Icon(Icons.logout),
-          ),
-        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              title: const Text('Home'),
+              onTap: () {
+                context.go('/');
+              },
+            ),
+            ListTile(
+              title: const Text('Videos'),
+              onTap: () {
+                context.go('/video');
+              },
+            ),
+            ListTile(
+              title: const Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+                context.read<AuthBloc>().add(AuthLogoutRequested());
+              },
+            ),
+          ],
+        ),
       ),
       body: ListView(
         children: [

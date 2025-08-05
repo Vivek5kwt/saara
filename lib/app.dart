@@ -9,6 +9,8 @@ import 'features/auth/repository/auth_repository.dart';
 import 'features/home/view/home_page.dart';
 import 'features/login/view/login_page.dart';
 import 'features/video/view/video_page.dart';
+import 'features/onboarding/view/onboarding_page.dart';
+import 'features/splash/view/splash_page.dart';
 
 /// A ChangeNotifier that listens to a Stream and notifies listeners on each event.
 /// Replacement for the removed GoRouterRefreshStream helper.
@@ -43,14 +45,23 @@ class App extends StatelessWidget {
             final authBloc = context.read<AuthBloc>();
             final router = GoRouter(
               refreshListenable: GoRouterRefreshStream(authBloc.stream),
+              initialLocation: '/splash',
               routes: [
                 GoRoute(
-                  path: '/',
-                  builder: (context, state) => const HomePage(),
+                  path: '/splash',
+                  builder: (context, state) => const SplashPage(),
+                ),
+                GoRoute(
+                  path: '/onboarding',
+                  builder: (context, state) => const OnboardingPage(),
                 ),
                 GoRoute(
                   path: '/login',
                   builder: (context, state) => const LoginPage(),
+                ),
+                GoRoute(
+                  path: '/',
+                  builder: (context, state) => const HomePage(),
                 ),
                 GoRoute(
                   path: '/video',
@@ -60,11 +71,16 @@ class App extends StatelessWidget {
               redirect: (context, state) {
                 final loggedIn =
                     authBloc.state.status == AuthStatus.authenticated;
-                // use matchedLocation instead of the removed subloc
-                final loggingIn = state.matchedLocation == '/login';
+                final loc = state.matchedLocation;
+                final loggingIn = loc == '/login';
+                final splash = loc == '/splash';
+                final onboarding = loc == '/onboarding';
 
-                if (!loggedIn) return loggingIn ? null : '/login';
-                if (loggingIn) return '/';
+                if (!loggedIn) {
+                  if (loggingIn || splash || onboarding) return null;
+                  return '/login';
+                }
+                if (loggingIn || splash || onboarding) return '/';
                 return null;
               },
             );
