@@ -82,27 +82,55 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
                         const SizedBox(height: 32),
 
-                        // title
-                        Text(
-                          page['title']!,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                        // animated title
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder: (child, anim) => FadeTransition(
+                            opacity: anim,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.2),
+                                end: Offset.zero,
+                              ).animate(anim),
+                              child: child,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
+                          child: Text(
+                            page['title']!,
+                            key: ValueKey(page['title']),
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
 
                         const SizedBox(height: 16),
 
-                        // subtitle
-                        Text(
-                          page['subtitle']!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black54,
+                        // animated subtitle
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder: (child, anim) => FadeTransition(
+                            opacity: anim,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.2),
+                                end: Offset.zero,
+                              ).animate(anim),
+                              child: child,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
+                          child: Text(
+                            page['subtitle']!,
+                            key: ValueKey(page['subtitle']),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ],
                     ),
@@ -134,24 +162,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
             // 3) Next / Get Started button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _nextOrFinish,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: activeDotColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                  ),
-                  child: Text(
-                    _currentPage == _pages.length - 1
-                        ? 'Get Started'
-                        : 'Next',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  width: 150,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: ElevatedButton(
+                      key: ValueKey(_currentPage),
+                      onPressed: _nextOrFinish,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: activeDotColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      child: Text(
+                        _currentPage == _pages.length - 1
+                            ? 'Get Started'
+                            : 'Next',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ),
