@@ -12,21 +12,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final _controller = PageController();
   int _currentPage = 0;
 
-  final _pages = const [
+  final List<Map<String, String>> _pages = const [
     {
+      'image': 'assets/images/onboard1.png',
       'title': 'Build Healthy Habits',
-      'subtitle':
-          'Set goals, get reminders, and create a routine that sticks.',
+      'subtitle': 'Set goals, get reminders, and create a routine that sticks.',
     },
     {
+      'image': 'assets/images/onboard2.png',
       'title': 'Progress That Feels Good',
       'subtitle':
-          'Notice improvements in your body and mind, one peaceful session at a time.',
+      'Notice improvements in your body and mind, one peaceful session at a time.',
     },
     {
+      'image': 'assets/images/onboard3.png',
       'title': 'Feel Strong, Inside Out',
       'subtitle':
-          'Unlock your inner power with daily yoga, breathwork, and positive rituals.',
+      'Unlock your inner power with daily yoga, breathwork, and positive rituals.',
     },
   ];
 
@@ -49,34 +51,57 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    const activeDotColor = Color(0xFFA78BFA);
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
+            // 1) The PageView with cross-fading images + titles/subtitles
             Expanded(
               child: PageView.builder(
                 controller: _controller,
                 itemCount: _pages.length,
-                onPageChanged: (index) => setState(() => _currentPage = index),
-                itemBuilder: (context, index) {
-                  final page = _pages[index];
+                onPageChanged: (i) => setState(() => _currentPage = i),
+                itemBuilder: (context, i) {
+                  final page = _pages[i];
                   return Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        // cross-fade illustration
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          child: Image.asset(
+                            page['image']!,
+                            key: ValueKey(page['image']),
+                            height: 300,
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // title
                         Text(
                           page['title']!,
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
                           textAlign: TextAlign.center,
                         ),
+
                         const SizedBox(height: 16),
+
+                        // subtitle
                         Text(
                           page['subtitle']!,
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -85,38 +110,55 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 },
               ),
             ),
+
+            // 2) Page indicator
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                _pages.length,
-                (index) => Container(
-                  margin: const EdgeInsets.all(4),
-                  width: 8,
+              children: List.generate(_pages.length, (i) {
+                final isActive = i == _currentPage;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: isActive ? 16 : 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentPage == index
-                        ? Colors.blue
-                        : Colors.grey.shade400,
+                    color: isActive ? activeDotColor : Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                ),
-              ),
+                );
+              }),
             ),
+
             const SizedBox(height: 24),
+
+            // 3) Next / Get Started button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _nextOrFinish,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: activeDotColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
                   child: Text(
                     _currentPage == _pages.length - 1
                         ? 'Get Started'
                         : 'Next',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
+
+            const SizedBox(height: 24),
           ],
         ),
       ),
