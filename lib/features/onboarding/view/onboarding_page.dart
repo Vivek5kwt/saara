@@ -32,6 +32,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
     },
   ];
 
+  // subtle background colors for each page
+  final List<Color> _bgColors = const [
+    Colors.white,
+    Color(0xFFF5F3FF),
+    Color(0xFFFFF7E5),
+  ];
+
   void _nextOrFinish() {
     if (_currentPage < _pages.length - 1) {
       _controller.nextPage(
@@ -52,9 +59,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     const activeDotColor = Color(0xFFA78BFA);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      color: _bgColors[_currentPage],
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
         child: Column(
           children: [
             // 1) The PageView with cross-fading images + titles/subtitles
@@ -70,9 +80,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // cross-fade illustration
+                        // cross-fade + slight zoom for illustration
                         AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 600),
+                          transitionBuilder: (child, anim) => FadeTransition(
+                            opacity: anim,
+                            child: ScaleTransition(
+                              scale: Tween<double>(begin: 0.95, end: 1.0)
+                                  .animate(anim),
+                              child: child,
+                            ),
+                          ),
                           child: Image.asset(
                             page['image']!,
                             key: ValueKey(page['image']),
@@ -82,27 +100,55 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
                         const SizedBox(height: 32),
 
-                        // title
-                        Text(
-                          page['title']!,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                        // animated title
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder: (child, anim) => FadeTransition(
+                            opacity: anim,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.2),
+                                end: Offset.zero,
+                              ).animate(anim),
+                              child: child,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
+                          child: Text(
+                            page['title']!,
+                            key: ValueKey(page['title']),
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
 
                         const SizedBox(height: 16),
 
-                        // subtitle
-                        Text(
-                          page['subtitle']!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black54,
+                        // animated subtitle
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder: (child, anim) => FadeTransition(
+                            opacity: anim,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.2),
+                                end: Offset.zero,
+                              ).animate(anim),
+                              child: child,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
+                          child: Text(
+                            page['subtitle']!,
+                            key: ValueKey(page['subtitle']),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ],
                     ),
@@ -134,24 +180,44 @@ class _OnboardingPageState extends State<OnboardingPage> {
             // 3) Next / Get Started button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _nextOrFinish,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: activeDotColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
+              child: Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: _currentPage == _pages.length - 1 ? 200 : 160,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFA78BFA), Color(0xFF6366F1)],
                     ),
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 4),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    _currentPage == _pages.length - 1
-                        ? 'Get Started'
-                        : 'Next',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  child: ElevatedButton(
+                    key: ValueKey(_currentPage),
+                    onPressed: _nextOrFinish,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Text(
+                      _currentPage == _pages.length - 1
+                          ? 'Get Started'
+                          : 'Next',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -162,6 +228,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
