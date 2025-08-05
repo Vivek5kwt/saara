@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:video_player/video_player.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      _ExploreView(onVideoTap: () => context.go('/video')),
+      const _ExploreView(),
       const Center(child: Text('Classes Page')),
       const Center(child: Text('Search Page')),
       const Center(child: Text('Settings Page')),
@@ -80,9 +80,42 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _ExploreView extends StatelessWidget {
-  final VoidCallback onVideoTap;
-  const _ExploreView({required this.onVideoTap});
+class _ExploreView extends StatefulWidget {
+  const _ExploreView({super.key});
+
+  @override
+  State<_ExploreView> createState() => _ExploreViewState();
+}
+
+class _ExploreViewState extends State<_ExploreView> {
+  late VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(
+          'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4'),
+    )..initialize().then((_) {
+        setState(() {});
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _togglePlay() {
+    setState(() {
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      } else {
+        _controller.play();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,18 +125,25 @@ class _ExploreView extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
         children: [
-        // --- Big “May Challenge” card ---
-        GestureDetector(
-          onTap: onVideoTap,
-          child: ClipRRect(
+          // --- Big “May Challenge” video card ---
+          ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Stack(
+              alignment: Alignment.center,
               children: [
-                Image.asset(
-                  'assets/images/may_challenge.png',
-                  fit: BoxFit.cover,
+                SizedBox(
                   height: 200,
                   width: double.infinity,
+                  child: _controller.value.isInitialized
+                      ? FittedBox(
+                          fit: BoxFit.cover,
+                          child: SizedBox(
+                            width: _controller.value.size.width,
+                            height: _controller.value.size.height,
+                            child: VideoPlayer(_controller),
+                          ),
+                        )
+                      : Container(color: Colors.black12),
                 ),
                 Positioned.fill(
                   child: DecoratedBox(
@@ -119,10 +159,10 @@ class _ExploreView extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
+                const Positioned(
                   top: 16,
                   left: 16,
-                  child: const Text(
+                  child: Text(
                     'May\nChallenge',
                     style: TextStyle(
                       color: Colors.white,
@@ -132,7 +172,8 @@ class _ExploreView extends StatelessWidget {
                     ),
                   ),
                 ),
-                Center(
+                GestureDetector(
+                  onTap: _togglePlay,
                   child: Container(
                     width: 64,
                     height: 64,
@@ -140,14 +181,18 @@ class _ExploreView extends StatelessWidget {
                       color: Colors.white.withOpacity(0.8),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.play_arrow,
-                        size: 32, color: primaryPurple),
+                    child: Icon(
+                      _controller.value.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      size: 32,
+                      color: primaryPurple,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
 
         const SizedBox(height: 32),
 
