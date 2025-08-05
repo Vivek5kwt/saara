@@ -87,6 +87,7 @@ class App extends StatelessWidget {
 
             return MaterialApp.router(
               title: 'Yoga App',
+              debugShowCheckedModeBanner: false,
               routerConfig: router,
             );
           },
