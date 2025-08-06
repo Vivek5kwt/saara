@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPage extends StatefulWidget {
@@ -214,46 +215,70 @@ class _VideoPageState extends State<VideoPage> {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Slider(
-                      value: _controller.value.position.inMilliseconds.toDouble().clamp(
-                          0.0, _controller.value.duration.inMilliseconds.toDouble()),
-                      max: _controller.value.duration.inMilliseconds.toDouble(),
-                      onChanged: (v) {
-                        _controller.seekTo(Duration(milliseconds: v.toInt()));
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      child: Row(
-                        children: [
-                          Text(
-                            '${_format(_controller.value.position)} / ${_format(_controller.value.duration)}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.fullscreen, color: Colors.white),
-                            onPressed: () async {
-                              final wasPlaying = _controller.value.isPlaying;
-                              _hideTimer?.cancel();
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => FullScreenVideo(controller: _controller),
-                                ),
-                              );
-                              if (wasPlaying) {
-                                _controller.play();
-                                _startHideTimer();
-                              }
-                            },
-                          )
-                        ],
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 4,
+                          activeTrackColor: const Color(0xFF9B65DE),
+                          inactiveTrackColor: Colors.white30,
+                          thumbColor: const Color(0xFF9B65DE),
+                          overlayColor: const Color(0x559B65DE),
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                        ),
+                        child: Slider(
+                          value: _controller.value.position.inMilliseconds
+                              .toDouble()
+                              .clamp(0.0, _controller.value.duration.inMilliseconds.toDouble()),
+                          max: _controller.value.duration.inMilliseconds.toDouble(),
+                          onChangeStart: (_) {
+                            _hideTimer?.cancel();
+                            if (!_showControls) {
+                              setState(() => _showControls = true);
+                            }
+                          },
+                          onChanged: (v) {
+                            _controller.seekTo(Duration(milliseconds: v.toInt()));
+                          },
+                          onChangeEnd: (_) {
+                            if (_controller.value.isPlaying) {
+                              _startHideTimer();
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${_format(_controller.value.position)} / ${_format(_controller.value.duration)}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.fullscreen, color: Colors.white),
+                              onPressed: () async {
+                                final wasPlaying = _controller.value.isPlaying;
+                                _hideTimer?.cancel();
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => FullScreenVideo(controller: _controller),
+                                  ),
+                                );
+                                if (wasPlaying) {
+                                  _controller.play();
+                                  _startHideTimer();
+                                }
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -421,51 +446,67 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Column(
           children: [
             _buildHeader(),
-            // Title & Description
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '*Start Here*\nWelcome to Saara & Define',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Welcome to Saara & Define – Your 14-Day Pilates & Strength Challenge!',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text('...More'),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Up Next',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-            // List area
             Expanded(
-              child: _showVideos ? _buildUpNextList() : _buildCommentsList(),
+              child: Container(
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '*Start Here*\nWelcome to Saara & Define',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Welcome to Saara & Define – Your 14-Day Pilates & Strength Challenge!',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton(
+                              onPressed: () {},
+                              child: const Text('...More'),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Up Next',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child:
+                          _showVideos ? _buildUpNextList() : _buildCommentsList(),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
+        bottomNavigationBar: _buildSegmentButtons(),
       ),
-      bottomNavigationBar: _buildSegmentButtons(),
     );
   }
 }
