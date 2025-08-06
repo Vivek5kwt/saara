@@ -89,7 +89,12 @@ class ClassDetailPage extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const VideoPage(),
+                        ),
+                      ),
                       icon: const Icon(Icons.play_arrow),
                       label: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 14),
