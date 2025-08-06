@@ -11,9 +11,10 @@ class VideoPage extends StatefulWidget {
   State<VideoPage> createState() => _VideoPageState();
 }
 
-class _VideoPageState extends State<VideoPage> {
+class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   late VideoPlayerController _controller;
-  bool _showVideos = true;
+  late PageController _pageController;
+  int _currentIndex = 0;
   bool _showControls = true;
   bool _isBuffering = false;
   Timer? _hideTimer;
@@ -21,6 +22,8 @@ class _VideoPageState extends State<VideoPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _pageController = PageController();
     _controller = VideoPlayerController.network(
       'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     )
@@ -34,10 +37,20 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _hideTimer?.cancel();
+    _pageController.dispose();
     _controller.removeListener(_videoListener);
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      _controller.pause();
+    }
   }
 
   void _videoListener() {
@@ -303,22 +316,31 @@ class _VideoPageState extends State<VideoPage> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _showVideos = true),
+                  onTap: () => _pageController.animateToPage(
+                    0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: _showVideos ? const Color(0xFF9B65DE) : Colors.transparent,
+                      color: _currentIndex == 0
+                          ? const Color(0xFF9B65DE)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.play_arrow,
-                            color: _showVideos ? Colors.white : Colors.black54),
+                            color:
+                                _currentIndex == 0 ? Colors.white : Colors.black54),
                         const SizedBox(width: 8),
                         Text('Videos',
                             style: TextStyle(
-                              color: _showVideos ? Colors.white : Colors.black54,
+                              color: _currentIndex == 0
+                                  ? Colors.white
+                                  : Colors.black54,
                               fontWeight: FontWeight.bold,
                             )),
                       ],
@@ -328,11 +350,15 @@ class _VideoPageState extends State<VideoPage> {
               ),
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _showVideos = false),
+                  onTap: () => _pageController.animateToPage(
+                    1,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: !_showVideos
+                      color: _currentIndex == 1
                           ? const Color(0xFF9B65DE)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(50),
@@ -341,13 +367,15 @@ class _VideoPageState extends State<VideoPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.comment,
-                            color:
-                                !_showVideos ? Colors.white : Colors.black54),
+                            color: _currentIndex == 1
+                                ? Colors.white
+                                : Colors.black54),
                         const SizedBox(width: 8),
                         Text('Comments',
                             style: TextStyle(
-                              color:
-                                  !_showVideos ? Colors.white : Colors.black54,
+                              color: _currentIndex == 1
+                                  ? Colors.white
+                                  : Colors.black54,
                               fontWeight: FontWeight.bold,
                             )),
                       ],
@@ -487,17 +515,23 @@ class _VideoPageState extends State<VideoPage> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            const Text(
-                              'Up Next',
-                              style: TextStyle(
+                            Text(
+                              _currentIndex == 0 ? 'Up Next' : 'Comments',
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
                       ),
                       Expanded(
-                        child:
-                            _showVideos ? _buildUpNextList() : _buildCommentsList(),
+                        child: PageView(
+                          controller: _pageController,
+                          onPageChanged: (i) => setState(() => _currentIndex = i),
+                          children: [
+                            _buildUpNextList(),
+                            _buildCommentsList(),
+                          ],
+                        ),
                       ),
                     ],
                   ),
