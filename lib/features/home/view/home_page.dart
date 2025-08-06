@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final pages = [
       const _ExploreView(),
-      const Center(child: Text('Classes Page')),
+      const ClassesPage(),
       const Center(child: Text('Search Page')),
       const Center(child: Text('Settings Page')),
     ];
@@ -40,37 +40,39 @@ class _HomePageState extends State<HomePage> {
           ListTile(leading: Icon(Icons.person), title: Text('Profile')),
         ]),
       ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(titles[_currentIndex],
-            style: const TextStyle(color: Colors.black)),
-        leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black87),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const NotificationPage()));
-              },
-              child: CircleAvatar(
-                backgroundColor: primaryPurple.withOpacity(0.1),
-                child: const Icon(Icons.notifications_none,
-                    color: primaryPurple),
+      appBar: _currentIndex == 1
+          ? null
+          : AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              centerTitle: true,
+              title: Text(titles[_currentIndex],
+                  style: const TextStyle(color: Colors.black)),
+              leading: Builder(
+                builder: (ctx) => IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.black87),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                ),
               ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const NotificationPage()));
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: primaryPurple.withOpacity(0.1),
+                      child: const Icon(Icons.notifications_none,
+                          color: primaryPurple),
+                    ),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
 
       body: IndexedStack(index: _currentIndex, children: pages),
 
