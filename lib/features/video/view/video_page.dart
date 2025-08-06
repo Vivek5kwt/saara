@@ -66,6 +66,62 @@ class _VideoPageState extends State<VideoPage> {
               ),
             ),
           ),
+          Align(
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.black38,
+                  child: IconButton(
+                    icon:
+                        const Icon(Icons.replay_10, color: Colors.white),
+                    onPressed: () {
+                      final current = _controller.value.position;
+                      _controller.seekTo(
+                        current - const Duration(seconds: 10),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                CircleAvatar(
+                  backgroundColor: Colors.black38,
+                  child: IconButton(
+                    icon: Icon(
+                      _controller.value.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (_controller.value.isPlaying) {
+                          _controller.pause();
+                        } else {
+                          _controller.play();
+                        }
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                CircleAvatar(
+                  backgroundColor: Colors.black38,
+                  child: IconButton(
+                    icon:
+                        const Icon(Icons.forward_10, color: Colors.white),
+                    onPressed: () {
+                      final current = _controller.value.position;
+                      _controller.seekTo(
+                        current + const Duration(seconds: 10),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -116,18 +172,22 @@ class _VideoPageState extends State<VideoPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: !_showVideos ? Colors.white : Colors.transparent,
+                      color: !_showVideos
+                          ? const Color(0xFF9B65DE)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.comment,
-                            color: !_showVideos ? Colors.black : Colors.black54),
+                            color:
+                                !_showVideos ? Colors.white : Colors.black54),
                         const SizedBox(width: 8),
                         Text('Comments',
                             style: TextStyle(
-                              color: !_showVideos ? Colors.black : Colors.black54,
+                              color:
+                                  !_showVideos ? Colors.white : Colors.black54,
                               fontWeight: FontWeight.bold,
                             )),
                       ],
