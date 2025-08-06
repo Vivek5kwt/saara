@@ -68,6 +68,36 @@ class _VideoPageState extends State<VideoPage> {
     return '$minutes:$seconds';
   }
 
+  void _showOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.file_download),
+              title: const Text('Download'),
+              onTap: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Download tapped')), );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.share),
+              title: const Text('Share'),
+              onTap: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Share tapped')), );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildHeader() {
     return GestureDetector(
       onTap: () {
@@ -93,24 +123,24 @@ class _VideoPageState extends State<VideoPage> {
               Positioned(
                 top: 12,
                 left: 12,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black38,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.black38,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
                   ),
-                ),
               ),
               Positioned(
                 top: 12,
                 right: 12,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black38,
-                  child: IconButton(
-                    icon: const Icon(Icons.more_vert, color: Colors.white),
-                    onPressed: () {},
+                  child: CircleAvatar(
+                    backgroundColor: Colors.black38,
+                    child: IconButton(
+                      icon: const Icon(Icons.more_vert, color: Colors.white),
+                      onPressed: _showOptions,
+                    ),
                   ),
-                ),
               ),
               Align(
                 alignment: Alignment.center,
@@ -361,7 +391,7 @@ class _VideoPageState extends State<VideoPage> {
             ),
             trailing: IconButton(
               icon: const Icon(Icons.more_vert),
-              onPressed: () {},
+              onPressed: _showOptions,
             ),
             onTap: locked ? null : () {},
           ),
