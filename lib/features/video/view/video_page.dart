@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -11,6 +13,9 @@ class VideoPage extends StatefulWidget {
 class _VideoPageState extends State<VideoPage> {
   late VideoPlayerController _controller;
   bool _showVideos = true;
+  bool _showControls = true;
+  bool _isBuffering = false;
+  Timer? _hideTimer;
 
   @override
   void initState() {
@@ -21,108 +26,209 @@ class _VideoPageState extends State<VideoPage> {
       ..initialize().then((_) {
         setState(() {});
         _controller.play();
+        _startHideTimer();
       });
+    _controller.addListener(_videoListener);
   }
 
   @override
   void dispose() {
+    _hideTimer?.cancel();
+    _controller.removeListener(_videoListener);
     _controller.dispose();
     super.dispose();
   }
 
+  void _videoListener() {
+    final buffering = _controller.value.isBuffering;
+    if (buffering != _isBuffering) {
+      setState(() {
+        _isBuffering = buffering;
+      });
+    } else {
+      // Rebuild to update position for slider
+      setState(() {});
+    }
+  }
+
+  void _startHideTimer() {
+    _hideTimer?.cancel();
+    _hideTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted && _controller.value.isPlaying) {
+        setState(() {
+          _showControls = false;
+        });
+      }
+    });
+  }
+
+  String _format(Duration d) {
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
   Widget _buildHeader() {
-    return AspectRatio(
-      aspectRatio:
-      _controller.value.isInitialized ? _controller.value.aspectRatio : 16 / 9,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (_controller.value.isInitialized)
-            VideoPlayer(_controller)
-          else
-            Container(
-              color: Colors.black12,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-          Positioned(
-            top: 12,
-            left: 12,
-            child: CircleAvatar(
-              backgroundColor: Colors.black38,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+    return GestureDetector(
+      onTap: () {
+        setState(() => _showControls = !_showControls);
+        if (_showControls && _controller.value.isPlaying) {
+          _startHideTimer();
+        }
+      },
+      child: AspectRatio(
+        aspectRatio:
+            _controller.value.isInitialized ? _controller.value.aspectRatio : 16 / 9,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (_controller.value.isInitialized)
+              VideoPlayer(_controller)
+            else
+              Container(
+                color: Colors.black12,
+                child: const Center(child: CircularProgressIndicator()),
               ),
-            ),
-          ),
-          Positioned(
-            top: 12,
-            right: 12,
-            child: CircleAvatar(
-              backgroundColor: Colors.black38,
-              child: IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-                onPressed: () {},
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
+            if (_showControls) ...[
+              Positioned(
+                top: 12,
+                left: 12,
+                child: CircleAvatar(
                   backgroundColor: Colors.black38,
                   child: IconButton(
-                    icon:
-                        const Icon(Icons.replay_10, color: Colors.white),
-                    onPressed: () {
-                      final current = _controller.value.position;
-                      _controller.seekTo(
-                        current - const Duration(seconds: 10),
-                      );
-                    },
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
                   ),
                 ),
-                const SizedBox(width: 12),
-                CircleAvatar(
+              ),
+              Positioned(
+                top: 12,
+                right: 12,
+                child: CircleAvatar(
                   backgroundColor: Colors.black38,
                   child: IconButton(
-                    icon: Icon(
-                      _controller.value.isPlaying
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      color: Colors.white,
+                    icon: const Icon(Icons.more_vert, color: Colors.white),
+                    onPressed: () {},
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.black38,
+                      child: IconButton(
+                        icon: const Icon(Icons.replay_10, color: Colors.white),
+                        onPressed: () async {
+                          final current = _controller.value.position;
+                          setState(() => _isBuffering = true);
+                          await _controller.seekTo(
+                            current - const Duration(seconds: 10),
+                          );
+                        },
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        if (_controller.value.isPlaying) {
-                          _controller.pause();
-                        } else {
-                          _controller.play();
-                        }
-                      });
-                    },
-                  ),
+                    const SizedBox(width: 12),
+                    CircleAvatar(
+                      backgroundColor: Colors.black38,
+                      child: _isBuffering
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : IconButton(
+                              icon: Icon(
+                                _controller.value.isPlaying
+                                    ? Icons.pause
+                                    : Icons.play_arrow,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (_controller.value.isPlaying) {
+                                    _controller.pause();
+                                    _hideTimer?.cancel();
+                                    _showControls = true;
+                                  } else {
+                                    _controller.play();
+                                    _startHideTimer();
+                                  }
+                                });
+                              },
+                            ),
+                    ),
+                    const SizedBox(width: 12),
+                    CircleAvatar(
+                      backgroundColor: Colors.black38,
+                      child: IconButton(
+                        icon: const Icon(Icons.forward_10, color: Colors.white),
+                        onPressed: () async {
+                          final current = _controller.value.position;
+                          setState(() => _isBuffering = true);
+                          await _controller.seekTo(
+                            current + const Duration(seconds: 10),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                CircleAvatar(
-                  backgroundColor: Colors.black38,
-                  child: IconButton(
-                    icon:
-                        const Icon(Icons.forward_10, color: Colors.white),
-                    onPressed: () {
-                      final current = _controller.value.position;
-                      _controller.seekTo(
-                        current + const Duration(seconds: 10),
-                      );
-                    },
-                  ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Slider(
+                      value: _controller.value.position.inMilliseconds.toDouble().clamp(
+                          0.0, _controller.value.duration.inMilliseconds.toDouble()),
+                      max: _controller.value.duration.inMilliseconds.toDouble(),
+                      onChanged: (v) {
+                        _controller.seekTo(Duration(milliseconds: v.toInt()));
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      child: Row(
+                        children: [
+                          Text(
+                            '${_format(_controller.value.position)} / ${_format(_controller.value.duration)}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.fullscreen, color: Colors.white),
+                            onPressed: () async {
+                              final wasPlaying = _controller.value.isPlaying;
+                              _hideTimer?.cancel();
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => FullScreenVideo(controller: _controller),
+                                ),
+                              );
+                              if (wasPlaying) {
+                                _controller.play();
+                                _startHideTimer();
+                              }
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -330,6 +436,29 @@ class _VideoPageState extends State<VideoPage> {
         ),
       ),
       bottomNavigationBar: _buildSegmentButtons(),
+    );
+  }
+}
+
+class FullScreenVideo extends StatelessWidget {
+  const FullScreenVideo({super.key, required this.controller});
+
+  final VideoPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Center(
+          child: AspectRatio(
+            aspectRatio:
+                controller.value.isInitialized ? controller.value.aspectRatio : 16 / 9,
+            child: VideoPlayer(controller),
+          ),
+        ),
+      ),
     );
   }
 }
