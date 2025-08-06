@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'class_detail_page.dart';
+import '../cubit/home_cubit.dart';
+import 'classes_page.dart';
+import 'programs_page.dart';
+import '../../notifications/view/notification_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,7 +28,9 @@ class _HomePageState extends State<HomePage> {
     ];
     final titles = ['Explore', 'Classes', 'Search', 'Settings'];
 
-    return Scaffold(
+    return BlocProvider(
+      create: (_) => HomeCubit(),
+      child: Scaffold(
       drawer: Drawer(
         child: ListView(padding: EdgeInsets.zero, children: const [
           DrawerHeader(
@@ -48,10 +55,18 @@ class _HomePageState extends State<HomePage> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundColor: primaryPurple.withOpacity(0.1),
-              child: const Icon(Icons.notifications_none,
-                  color: primaryPurple),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const NotificationPage()));
+              },
+              child: CircleAvatar(
+                backgroundColor: primaryPurple.withOpacity(0.1),
+                child: const Icon(Icons.notifications_none,
+                    color: primaryPurple),
+              ),
             ),
           )
         ],
@@ -198,35 +213,48 @@ class _ExploreViewState extends State<_ExploreView> {
         const SizedBox(height: 32),
 
         // --- “Saara Classes” title + horizontal list ---
-        const Text(
-          'Saara Classes',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Saara Classes',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_forward),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<HomeCubit>(),
+                      child: const ClassesPage(),
+                    ),
+                  ),
+                );
+              },
+            )
+          ],
         ),
         const SizedBox(height: 16),
         SizedBox(
           height: 160,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: const [
-              _ClassCard(
-                image: 'assets/images/class1.png',
-                title: 'Beginner Challenge',
-                subtitle: '15 Videos',
-              ),
-              SizedBox(width: 12),
-              _ClassCard(
-                image: 'assets/images/class2.png',
-                title: 'ABS Challenge',
-                subtitle: '12 Videos',
-              ),
-              SizedBox(width: 12),
-              _ClassCard(
-                image: 'assets/images/class2.png',
-                title: 'Daily Flow',
-                subtitle: '20 Videos',
-              ),
-            ],
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) {
+              return ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.classes.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final item = state.classes[index];
+                  return _ClassCard(
+                    image: item.image,
+                    title: item.title,
+                    subtitle: item.subtitle,
+                  );
+                },
+              );
+            },
           ),
         ),
 
@@ -300,35 +328,48 @@ class _ExploreViewState extends State<_ExploreView> {
         const SizedBox(height: 32),
 
         // --- “More Programs” + horizontal list ---
-        const Text(
-          'More Programs',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'More Programs',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_forward),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<HomeCubit>(),
+                      child: const ProgramsPage(),
+                    ),
+                  ),
+                );
+              },
+            )
+          ],
         ),
         const SizedBox(height: 16),
         SizedBox(
           height: 200,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: const [
-              _ProgramCard(
-                image: 'assets/images/summer.png',
-                title: 'Summer Challenge',
-                subtitle: '15 Videos',
-              ),
-              SizedBox(width: 12),
-              _ProgramCard(
-                image: 'assets/images/abs_waist.png',
-                title: 'ABS & Waist Program',
-                subtitle: '36 Videos',
-              ),
-              SizedBox(width: 12),
-              _ProgramCard(
-                image: 'assets/images/abs_waist.png',
-                title: 'Yoga Flow Series',
-                subtitle: '24 Videos',
-              ),
-            ],
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) {
+              return ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.programs.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final item = state.programs[index];
+                  return _ProgramCard(
+                    image: item.image,
+                    title: item.title,
+                    subtitle: item.subtitle,
+                  );
+                },
+              );
+            },
           ),
         ),
 
