@@ -359,7 +359,7 @@ class _ClassCard extends StatelessWidget {
             builder: (_) => ClassDetailPage(
               title: title,
               image: image,
-              videoCount: videoCount,
+              videoCount: videoCount, description: '',
             ),
           ),
         );
