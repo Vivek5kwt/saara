@@ -95,6 +95,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   'Send Reset Link',
                   style: TextStyle(
                     fontSize: 16,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

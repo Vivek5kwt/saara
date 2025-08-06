@@ -96,7 +96,7 @@ class App extends StatelessWidget {
             );
 
             return MaterialApp.router(
-              title: 'Yoga App',
+              title: 'Saara',
               debugShowCheckedModeBanner: false,
               routerConfig: router,
             );
