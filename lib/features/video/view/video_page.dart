@@ -280,7 +280,6 @@ class _VideoPageState extends State<VideoPage> {
                     ],
                   ),
                 ),
-              ),
             ],
           ],
         ),
@@ -451,61 +450,63 @@ class _VideoPageState extends State<VideoPage> {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
       ),
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Column(
-          children: [
-            _buildHeader(),
-            Expanded(
-              child: Container(
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '*Start Here*\nWelcome to Saara & Define',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Welcome to Saara & Define – Your 14-Day Pilates & Strength Challenge!',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: const Text('...More'),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          body: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '*Start Here*\nWelcome to Saara & Define',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Up Next',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Welcome to Saara & Define – Your 14-Day Pilates & Strength Challenge!',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: const Text('...More'),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Up Next',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child:
-                          _showVideos ? _buildUpNextList() : _buildCommentsList(),
-                    ),
-                  ],
+                      Expanded(
+                        child:
+                            _showVideos ? _buildUpNextList() : _buildCommentsList(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
+          bottomNavigationBar: _buildSegmentButtons(),
         ),
-        bottomNavigationBar: _buildSegmentButtons(),
       ),
     );
   }
