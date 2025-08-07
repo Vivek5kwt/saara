@@ -18,6 +18,10 @@ class AuthLoginRequested extends AuthEvent {
   final String password;
 }
 
+class AuthGoogleLoginRequested extends AuthEvent {}
+
+class AuthFacebookLoginRequested extends AuthEvent {}
+
 class AuthLogoutRequested extends AuthEvent {}
 
 enum AuthStatus { authenticated, unauthenticated }
@@ -39,6 +43,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._repository) : super(const AuthState.unauthenticated()) {
     on<AuthUserChanged>(_onUserChanged);
     on<AuthLoginRequested>(_onLoginRequested);
+    on<AuthGoogleLoginRequested>(_onGoogleLoginRequested);
+    on<AuthFacebookLoginRequested>(_onFacebookLoginRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
     _subscription = _repository.stream.listen((user) {
       add(AuthUserChanged(user));
@@ -61,6 +67,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLoginRequested(
       AuthLoginRequested event, Emitter<AuthState> emit) async {
     await _repository.logIn(email: event.email, password: event.password);
+  }
+
+  Future<void> _onGoogleLoginRequested(
+      AuthGoogleLoginRequested event, Emitter<AuthState> emit) async {
+    await _repository.logInWithGoogle();
+  }
+
+  Future<void> _onFacebookLoginRequested(
+      AuthFacebookLoginRequested event, Emitter<AuthState> emit) async {
+    await _repository.logInWithFacebook();
   }
 
   Future<void> _onLogoutRequested(

@@ -129,9 +129,17 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _socialButton(icon: Icons.facebook, onTap: () {}),
+                  _socialButton(
+                      icon: Icons.facebook,
+                      onTap: () => context
+                          .read<AuthBloc>()
+                          .add(AuthFacebookLoginRequested())),
                   const SizedBox(width: 24),
-                  _socialButton(icon: Icons.g_mobiledata, onTap: () {}),
+                  _socialButton(
+                      icon: Icons.g_mobiledata,
+                      onTap: () => context
+                          .read<AuthBloc>()
+                          .add(AuthGoogleLoginRequested())),
                   const SizedBox(width: 24),
                   _socialButton(icon: Icons.apple, onTap: () {}),
                 ],
