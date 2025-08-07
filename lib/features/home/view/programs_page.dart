@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:saara/widgets/custom_app_bar.dart';
 import '../cubit/home_cubit.dart';
 import 'class_detail_page.dart';
 
@@ -10,7 +11,7 @@ class ProgramsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final programs = context.watch<HomeCubit>().state.programs;
     return Scaffold(
-      appBar: AppBar(title: const Text('Programs')),
+      appBar: const CustomAppBar(title: 'Programs'),
       body: ListView.builder(
         itemCount: programs.length,
         itemBuilder: (context, index) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:saara/widgets/custom_app_bar.dart';
 import '../cubit/notification_cubit.dart';
 
 class NotificationPage extends StatelessWidget {
@@ -10,7 +11,7 @@ class NotificationPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => NotificationCubit(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Notifications')),
+        appBar: const CustomAppBar(title: 'Notifications'),
         body: BlocBuilder<NotificationCubit, List<String>>(
           builder: (context, notifications) {
             if (notifications.isEmpty) {
