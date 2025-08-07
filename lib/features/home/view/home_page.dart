@@ -2,13 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 import 'package:saara/widgets/custom_app_bar.dart';
-import 'class_detail_page.dart';
 import '../cubit/home_cubit.dart';
 import 'classes_page.dart';
 import 'programs_page.dart';
-import '../../notifications/view/notification_page.dart';
 import '../../settings/view/settings_page.dart';
 import '../../search/view/search_page.dart';
 
@@ -123,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Explore'),
                 onTap: () {
                   setState(() => _currentIndex = 0);
-                  Navigator.pop(context);
+                  context.pop();
                 },
               ),
               ListTile(
@@ -131,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Classes'),
                 onTap: () {
                   setState(() => _currentIndex = 1);
-                  Navigator.pop(context);
+                  context.pop();
                 },
               ),
               ListTile(
@@ -139,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Search'),
                 onTap: () {
                   setState(() => _currentIndex = 2);
-                  Navigator.pop(context);
+                  context.pop();
                 },
               ),
               const Divider(),
@@ -148,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Settings'),
                 onTap: () {
                   setState(() => _currentIndex = 3);
-                  Navigator.pop(context);
+                  context.pop();
                 },
               ),
             ],
@@ -168,12 +167,7 @@ class _HomePageState extends State<HomePage> {
                   Padding(
                     padding: const EdgeInsets.only(right: 16),
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const NotificationPage()));
-                      },
+                      onTap: () => context.push('/notifications'),
                       child: CircleAvatar(
                         backgroundColor: Colors.white.withOpacity(0.1),
                         child: const Icon(
@@ -317,17 +311,10 @@ class _ExploreViewState extends State<_ExploreView> {
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider.value(
-                      value: context.read<HomeCubit>(),
-                      child: const ClassesPage(),
-                    ),
-                  ),
-                );
-              },
+              onPressed: () => context.push(
+                '/classes',
+                extra: context.read<HomeCubit>(),
+              ),
             )
           ],
         ),
@@ -432,17 +419,10 @@ class _ExploreViewState extends State<_ExploreView> {
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider.value(
-                      value: context.read<HomeCubit>(),
-                      child: const ProgramsPage(),
-                    ),
-                  ),
-                );
-              },
+              onPressed: () => context.push(
+                '/programs',
+                extra: context.read<HomeCubit>(),
+              ),
             )
           ],
         ),
@@ -489,16 +469,12 @@ class _ClassCard extends StatelessWidget {
         int.tryParse(RegExp(r'\d+').firstMatch(subtitle)?.group(0) ?? '') ?? 0;
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ClassDetailPage(
-              title: title,
-              image: image,
-              videoCount: videoCount, description: '',
-            ),
-          ),
-        );
+        context.push('/class-detail', extra: {
+          'title': title,
+          'image': image,
+          'videoCount': videoCount,
+          'description': '',
+        });
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
