@@ -7,6 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:saara/widgets/custom_app_bar.dart';
 import '../cubit/home_cubit.dart';
 import 'classes_page.dart';
+import 'package:saara/widgets/class_card.dart';
 import 'programs_page.dart';
 import '../../settings/view/settings_page.dart';
 import '../../search/view/search_page.dart';
@@ -329,10 +330,13 @@ class _ExploreViewState extends State<_ExploreView> {
                 separatorBuilder: (_, __) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {
                   final item = state.classes[index];
-                  return _ClassCard(
-                    image: item.image,
-                    title: item.title,
-                    subtitle: item.subtitle,
+                  return SizedBox(
+                    width: 240,
+                    child: ClassCard(
+                      image: item.image,
+                      title: item.title,
+                      subtitle: item.subtitle,
+                    ),
                   );
                 },
               );
@@ -452,62 +456,6 @@ class _ExploreViewState extends State<_ExploreView> {
       ],
     ),
   );
-  }
-}
-
-class _ClassCard extends StatelessWidget {
-  final String image, title, subtitle;
-  const _ClassCard({
-    required this.image,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final videoCount =
-        int.tryParse(RegExp(r'\d+').firstMatch(subtitle)?.group(0) ?? '') ?? 0;
-    return GestureDetector(
-      onTap: () {
-        context.push('/class-detail', extra: {
-          'title': title,
-          'image': image,
-          'videoCount': videoCount,
-          'description': '',
-        });
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            Image.asset(image, height: 160, width: 240, fit: BoxFit.cover),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: const Color(0xFFA78BFA).withOpacity(0.9),
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Text(subtitle,
-                        style: const TextStyle(color: Colors.white70)),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 
