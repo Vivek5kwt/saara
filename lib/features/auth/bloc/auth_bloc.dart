@@ -27,16 +27,17 @@ class AuthLogoutRequested extends AuthEvent {}
 enum AuthStatus { authenticated, unauthenticated }
 
 class AuthState {
-  const AuthState._({required this.status, this.user});
+  const AuthState._({required this.status, this.user, this.error});
 
   const AuthState.authenticated(User user)
       : this._(status: AuthStatus.authenticated, user: user);
 
-  const AuthState.unauthenticated()
-      : this._(status: AuthStatus.unauthenticated);
+  const AuthState.unauthenticated({String? error})
+      : this._(status: AuthStatus.unauthenticated, error: error);
 
   final AuthStatus status;
   final User? user;
+  final String? error;
 }
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -71,7 +72,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onGoogleLoginRequested(
       AuthGoogleLoginRequested event, Emitter<AuthState> emit) async {
-    await _repository.logInWithGoogle();
+    try {
+      await _repository.logInWithGoogle();
+    } catch (_) {
+      emit(const AuthState.unauthenticated(error: 'Google sign-in failed'));
+    }
   }
 
   Future<void> _onFacebookLoginRequested(

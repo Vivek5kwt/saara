@@ -105,6 +105,10 @@ class App extends StatelessWidget {
                     SnackBar(content: Text('Welcome $name')),
                   );
                   router.go('/');
+                } else if (state.error != null) {
+                  _messengerKey.currentState?.showSnackBar(
+                    SnackBar(content: Text(state.error!)),
+                  );
                 }
               },
               child: MaterialApp.router(
