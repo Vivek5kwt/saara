@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "899053476730",
+    "project_id": "saara-15c46",
+    "storage_bucket": "saara-15c46.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899053476730:android:432d546b2f1f202d4294c3",
+        "android_client_info": {
+          "package_name": "com.example.saara"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899053476730-hfu6u00p7e1d6n0bk7oal08img5jblvr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1crhwpKbYJzey4x3WMsYyha3At7Pz0ZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899053476730-hfu6u00p7e1d6n0bk7oal08img5jblvr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
