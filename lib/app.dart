@@ -31,7 +31,9 @@ class GoRouterRefreshStream extends ChangeNotifier {
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  App({super.key});
+
+  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +97,22 @@ class App extends StatelessWidget {
               },
             );
 
-            return MaterialApp.router(
-              title: 'Saara',
-              debugShowCheckedModeBanner: false,
-              routerConfig: router,
+            return BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state.status == AuthStatus.authenticated) {
+                  final name = state.user?.name ?? state.user?.email ?? 'User';
+                  _messengerKey.currentState?.showSnackBar(
+                    SnackBar(content: Text('Welcome $name')),
+                  );
+                  router.go('/');
+                }
+              },
+              child: MaterialApp.router(
+                title: 'Saara',
+                debugShowCheckedModeBanner: false,
+                routerConfig: router,
+                scaffoldMessengerKey: _messengerKey,
+              ),
             );
           },
         ),

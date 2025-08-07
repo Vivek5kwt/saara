@@ -24,7 +24,11 @@ class AuthRepository {
 
   User? _userFromFirebase(fb.User? user) {
     if (user == null) return null;
-    return User(email: user.email ?? '', isMember: true);
+    return User(
+      email: user.email ?? '',
+      name: user.displayName ?? '',
+      isMember: true,
+    );
   }
 
   Future<void> logIn({required String email, required String password}) async {
