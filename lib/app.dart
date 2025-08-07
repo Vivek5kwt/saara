@@ -165,10 +165,6 @@ class App extends StatelessWidget {
             return BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state.status == AuthStatus.authenticated) {
-                  final name = state.user?.name ?? state.user?.email ?? 'User';
-                  _messengerKey.currentState?.showSnackBar(
-                    SnackBar(content: Text('Welcome $name')),
-                  );
                   router.go('/');
                 } else if (state.error != null) {
                   _messengerKey.currentState?.showSnackBar(

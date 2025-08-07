@@ -445,6 +445,7 @@ class _ExploreViewState extends State<_ExploreView> {
                     image: item.image,
                     title: item.title,
                     subtitle: item.subtitle,
+                    onTap: () => context.push('/video'),
                   );
                 },
               );
@@ -493,10 +494,12 @@ class _FeatureCard extends StatelessWidget {
 
 class _ProgramCard extends StatelessWidget {
   final String image, title, subtitle;
+  final VoidCallback? onTap;
   const _ProgramCard({
     required this.image,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
 
   @override
@@ -507,36 +510,39 @@ class _ProgramCard extends StatelessWidget {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Image.asset(
-                image,
-                width: double.infinity,
-                fit: BoxFit.cover,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Image.asset(
+                  image,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style:
-                        const TextStyle(color: Colors.black54, fontSize: 14),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style:
+                          const TextStyle(color: Colors.black54, fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
