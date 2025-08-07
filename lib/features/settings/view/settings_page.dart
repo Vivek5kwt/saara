@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../theme/cubit/theme_cubit.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -9,7 +12,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _notificationsEnabled = true;
-  bool _darkMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +29,11 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
         SwitchListTile(
-          value: _darkMode,
+          value: context.watch<ThemeCubit>().state == ThemeMode.dark,
           activeColor: primaryPurple,
           title: const Text('Dark mode'),
           onChanged: (value) {
-            setState(() => _darkMode = value);
+            context.read<ThemeCubit>().toggle(value);
           },
         ),
       ],

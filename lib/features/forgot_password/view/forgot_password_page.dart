@@ -13,18 +13,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    const bgColor = Color(0xFFFCF9F5);
     const primaryPurple = Color(0xFFA78BFA);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: const Text('Forgot Password',
-            style: TextStyle(color: Colors.black)),
-        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Forgot Password'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -41,12 +38,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             Text(
               'Enter your email and we\'ll send you a link to reset your password.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade700),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
@@ -61,8 +60,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined,
-                      color: Colors.grey.shade600),
+                  prefixIcon: Icon(
+                    Icons.email_outlined,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(12),
