@@ -120,24 +120,56 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
         body: IndexedStack(index: _currentIndex, children: pages),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          selectedItemColor: primaryPurple,
-          unselectedItemColor:
-              Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-          showUnselectedLabels: true,
-          onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.explore_outlined), label: 'Explore'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.self_improvement_outlined),
-                label: 'Classes'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.search_outlined), label: 'Search'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings_outlined), label: 'Settings'),
-          ],
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(28),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [primaryPurple, Color(0xFF6C63FF)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: NavigationBar(
+                backgroundColor: Colors.transparent,
+                height: 70,
+                elevation: 0,
+                indicatorShape: const StadiumBorder(),
+                indicatorColor: Colors.white24,
+                selectedIndex: _currentIndex,
+                onDestinationSelected: (i) => setState(() => _currentIndex = i),
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.explore_outlined),
+                    selectedIcon: Icon(Icons.explore),
+                    label: 'Explore',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.self_improvement_outlined),
+                    selectedIcon: Icon(Icons.self_improvement),
+                    label: 'Classes',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.search_outlined),
+                    selectedIcon: Icon(Icons.search),
+                    label: 'Search',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.settings_outlined),
+                    selectedIcon: Icon(Icons.settings),
+                    label: 'Settings',
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ));
   }
