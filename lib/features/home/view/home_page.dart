@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
@@ -19,6 +21,80 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   static const primaryPurple = Color(0xFFA78BFA);
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final selected = _currentIndex == index;
+    return Expanded(
+      child: InkWell(
+        onTap: () => setState(() => _currentIndex = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          decoration: BoxDecoration(
+            color: selected ? Colors.white.withOpacity(0.3) : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedScale(
+                scale: selected ? 1.2 : 1.0,
+                duration: const Duration(milliseconds: 250),
+                child: Icon(icon, color: Colors.white),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassNavBar() {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [primaryPurple, Color(0xFF6C63FF)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Container(
+              color: Colors.white.withOpacity(0.1),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                children: [
+                  _buildNavItem(0, Icons.explore, 'Explore'),
+                  _buildNavItem(1, Icons.self_improvement, 'Classes'),
+                  _buildNavItem(2, Icons.search, 'Search'),
+                  _buildNavItem(3, Icons.settings, 'Settings'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,57 +196,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
         body: IndexedStack(index: _currentIndex, children: pages),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(12),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(28),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [primaryPurple, Color(0xFF6C63FF)],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: NavigationBar(
-                backgroundColor: Colors.transparent,
-                height: 70,
-                elevation: 0,
-                indicatorShape: const StadiumBorder(),
-                indicatorColor: Colors.white24,
-                selectedIndex: _currentIndex,
-                onDestinationSelected: (i) => setState(() => _currentIndex = i),
-                destinations: const [
-                  NavigationDestination(
-                    icon: Icon(Icons.explore_outlined),
-                    selectedIcon: Icon(Icons.explore),
-                    label: 'Explore',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.self_improvement_outlined),
-                    selectedIcon: Icon(Icons.self_improvement),
-                    label: 'Classes',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.search_outlined),
-                    selectedIcon: Icon(Icons.search),
-                    label: 'Search',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.settings_outlined),
-                    selectedIcon: Icon(Icons.settings),
-                    label: 'Settings',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        bottomNavigationBar: _buildGlassNavBar(),
       ));
   }
 }
