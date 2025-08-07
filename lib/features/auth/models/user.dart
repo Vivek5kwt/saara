@@ -5,4 +5,3 @@ class User {
   final String name;
   final bool isMember;
 }
-

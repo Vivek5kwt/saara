@@ -74,8 +74,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthGoogleLoginRequested event, Emitter<AuthState> emit) async {
     try {
       await _repository.logInWithGoogle();
-    } catch (_) {
-      emit(const AuthState.unauthenticated(error: 'Google sign-in failed'));
+    } catch (e) {
+      emit(AuthState.unauthenticated(error: e.toString()));
     }
   }
 
@@ -96,4 +96,3 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return super.close();
   }
 }
-

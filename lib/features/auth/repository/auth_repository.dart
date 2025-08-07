@@ -42,16 +42,18 @@ class AuthRepository {
   Future<void> logInWithGoogle() async {
     try {
       final googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return;
+      if (googleUser == null) {
+        throw Exception('Sign in aborted by user');
+      }
       final googleAuth = await googleUser.authentication;
       final credential = fb.GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
       await _firebaseAuth.signInWithCredential(credential);
-    } catch (e) {
+    } catch (e, s) {
       debugPrint('Google sign-in error: $e');
-      rethrow;
+      Error.throwWithStackTrace(e, s);
     }
   }
 
