@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// A creative search experience with animated results and quick suggestions.
 class SearchPage extends StatefulWidget {
@@ -23,6 +24,23 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     'Yoga Flow Series Intro',
     'Summer Challenge Finale',
   ];
+
+  /// Demo mapping of titles to video URLs. Normally this would come from
+  /// an API or database.
+  final Map<String, String> _videoUrls = const {
+    'Beginner Challenge Day 1':
+        'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'Beginner Challenge Day 2':
+        'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'ABS Challenge Warmup':
+        'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'Daily Flow Session':
+        'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'Yoga Flow Series Intro':
+        'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'Summer Challenge Finale':
+        'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  };
 
   List<String> _filtered = const [];
 
@@ -135,12 +153,14 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                         itemBuilder: (context, index) {
                           final title = _filtered[index];
                           return ListTile(
-                            title: Text(title, style: const TextStyle(color: Colors.white)),
-                            trailing: const Icon(Icons.play_arrow, color: Colors.white),
+                            title: Text(title,
+                                style: const TextStyle(color: Colors.white)),
+                            trailing:
+                                const Icon(Icons.play_arrow, color: Colors.white),
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Selected "$title"')),
-                              );
+                              final url = _videoUrls[title];
+                              context.push('/video',
+                                  extra: {'title': title, 'url': url});
                             },
                           );
                         },

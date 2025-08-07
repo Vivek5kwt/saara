@@ -12,18 +12,44 @@ class NotificationPage extends StatelessWidget {
       create: (_) => NotificationCubit(),
       child: Scaffold(
         appBar: const CustomAppBar(title: 'Notifications'),
-        body: BlocBuilder<NotificationCubit, List<String>>(
-          builder: (context, notifications) {
-            if (notifications.isEmpty) {
-              return const Center(child: Text('No notifications'));
-            }
-            return ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                return ListTile(title: Text(notifications[index]));
-              },
-            );
-          },
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFA78BFA), Color(0xFF6C63FF)],
+            ),
+          ),
+          child: BlocBuilder<NotificationCubit, List<String>>(
+            builder: (context, notifications) {
+              if (notifications.isEmpty) {
+                return const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.notifications_off,
+                          size: 64, color: Colors.white70),
+                      SizedBox(height: 16),
+                      Text('No notifications',
+                          style: TextStyle(color: Colors.white70)),
+                    ],
+                  ),
+                );
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.notifications),
+                      title: Text(notifications[index]),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

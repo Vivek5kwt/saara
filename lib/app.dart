@@ -82,7 +82,13 @@ class App extends StatelessWidget {
                 ),
                 GoRoute(
                   path: '/video',
-                  builder: (context, state) => const VideoPage(),
+                  builder: (context, state) {
+                    final data = state.extra as Map<String, String>?;
+                    return VideoPage(
+                      title: data?['title'],
+                      url: data?['url'],
+                    );
+                  },
                 ),
                 GoRoute(
                   path: '/video/fullscreen',
