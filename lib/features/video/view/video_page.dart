@@ -6,7 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPage extends StatefulWidget {
-  const VideoPage({super.key});
+  const VideoPage({super.key, this.title, this.url});
+
+  final String? title;
+  final String? url;
 
   @override
   State<VideoPage> createState() => _VideoPageState();
@@ -26,7 +29,8 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _pageController = PageController();
     _controller = VideoPlayerController.network(
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      widget.url ??
+          'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     )
       ..initialize().then((_) {
         setState(() {});
@@ -482,8 +486,21 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
         child: Scaffold(
           backgroundColor: Colors.black,
           body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
+              if (widget.title != null)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    widget.title!,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               Expanded(
                 child: Container(
                   color: Colors.white,
