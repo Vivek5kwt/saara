@@ -12,6 +12,7 @@ import 'features/video/view/video_page.dart';
 import 'features/onboarding/view/onboarding_page.dart';
 import 'features/splash/view/splash_page.dart';
 import 'features/forgot_password/view/forgot_password_page.dart';
+import 'theme/cubit/theme_cubit.dart';
 
 /// A ChangeNotifier that listens to a Stream and notifies listeners on each event.
 /// Replacement for the removed GoRouterRefreshStream helper.
@@ -41,8 +42,11 @@ class App extends StatelessWidget {
 
     return RepositoryProvider.value(
       value: authRepository,
-      child: BlocProvider(
-        create: (_) => AuthBloc(authRepository),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AuthBloc(authRepository)),
+          BlocProvider(create: (_) => ThemeCubit()),
+        ],
         child: Builder(
           builder: (context) {
             final authBloc = context.read<AuthBloc>();
@@ -97,6 +101,8 @@ class App extends StatelessWidget {
               },
             );
 
+            final themeMode = context.watch<ThemeCubit>().state;
+
             return BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state.status == AuthStatus.authenticated) {
@@ -116,6 +122,18 @@ class App extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 routerConfig: router,
                 scaffoldMessengerKey: _messengerKey,
+                theme: ThemeData(
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: const Color(0xFFA78BFA),
+                  ),
+                ),
+                darkTheme: ThemeData(
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: const Color(0xFFA78BFA),
+                    brightness: Brightness.dark,
+                  ),
+                ),
+                themeMode: themeMode,
               ),
             );
           },

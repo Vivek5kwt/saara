@@ -32,105 +32,113 @@ class _HomePageState extends State<HomePage> {
     return BlocProvider(
       create: (_) => HomeCubit(),
       child: Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: primaryPurple),
-              child: Text('Menu', style: TextStyle(color: Colors.white)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.explore_outlined),
-              title: const Text('Explore'),
-              onTap: () {
-                setState(() => _currentIndex = 0);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.self_improvement_outlined),
-              title: const Text('Classes'),
-              onTap: () {
-                setState(() => _currentIndex = 1);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.search_outlined),
-              title: const Text('Search'),
-              onTap: () {
-                setState(() => _currentIndex = 2);
-                Navigator.pop(context);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings_outlined),
-              title: const Text('Settings'),
-              onTap: () {
-                setState(() => _currentIndex = 3);
-                Navigator.pop(context);
-              },
-            ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(color: primaryPurple),
+                child: Text('Menu', style: TextStyle(color: Colors.white)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.explore_outlined),
+                title: const Text('Explore'),
+                onTap: () {
+                  setState(() => _currentIndex = 0);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.self_improvement_outlined),
+                title: const Text('Classes'),
+                onTap: () {
+                  setState(() => _currentIndex = 1);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.search_outlined),
+                title: const Text('Search'),
+                onTap: () {
+                  setState(() => _currentIndex = 2);
+                  Navigator.pop(context);
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.settings_outlined),
+                title: const Text('Settings'),
+                onTap: () {
+                  setState(() => _currentIndex = 3);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ),
+        appBar: _currentIndex == 1
+            ? null
+            : AppBar(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                elevation: 0,
+                centerTitle: true,
+                title: Text(
+                  titles[_currentIndex],
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                leading: Builder(
+                  builder: (ctx) => IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    onPressed: () => Scaffold.of(ctx).openDrawer(),
+                  ),
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const NotificationPage()));
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: primaryPurple.withOpacity(0.1),
+                        child: const Icon(
+                          Icons.notifications_none,
+                          color: primaryPurple,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+        body: IndexedStack(index: _currentIndex, children: pages),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          selectedItemColor: primaryPurple,
+          unselectedItemColor:
+              Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          showUnselectedLabels: true,
+          onTap: (i) => setState(() => _currentIndex = i),
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.explore_outlined), label: 'Explore'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.self_improvement_outlined),
+                label: 'Classes'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.search_outlined), label: 'Search'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings_outlined), label: 'Settings'),
           ],
         ),
-      ),
-      appBar: _currentIndex == 1
-          ? null
-          : AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              centerTitle: true,
-              title: Text(titles[_currentIndex],
-                  style: const TextStyle(color: Colors.black)),
-              leading: Builder(
-                builder: (ctx) => IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.black87),
-                  onPressed: () => Scaffold.of(ctx).openDrawer(),
-                ),
-              ),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const NotificationPage()));
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: primaryPurple.withOpacity(0.1),
-                      child: const Icon(Icons.notifications_none,
-                          color: primaryPurple),
-                    ),
-                  ),
-                )
-              ],
-            ),
-
-      body: IndexedStack(index: _currentIndex, children: pages),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: primaryPurple,
-        unselectedItemColor: Colors.grey.shade400,
-        showUnselectedLabels: true,
-        onTap: (i) => setState(() => _currentIndex = i),
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.explore_outlined), label: 'Explore'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.self_improvement_outlined),
-              label: 'Classes'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined), label: 'Search'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined), label: 'Settings'),
-        ],
-      ),
-    ));
+      ));
   }
 }
 
