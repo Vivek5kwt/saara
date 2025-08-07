@@ -6,6 +6,7 @@ import '../cubit/home_cubit.dart';
 import 'classes_page.dart';
 import 'programs_page.dart';
 import '../../notifications/view/notification_page.dart';
+import '../../settings/view/settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,7 +25,7 @@ class _HomePageState extends State<HomePage> {
       const _ExploreView(),
       const ClassesPage(),
       const Center(child: Text('Search Page')),
-      const Center(child: Text('Settings Page')),
+      const SettingsPage(),
     ];
     final titles = ['Explore', 'Classes', 'Search', 'Settings'];
 
@@ -32,13 +33,48 @@ class _HomePageState extends State<HomePage> {
       create: (_) => HomeCubit(),
       child: Scaffold(
       drawer: Drawer(
-        child: ListView(padding: EdgeInsets.zero, children: const [
-          DrawerHeader(
-            decoration: BoxDecoration(color: primaryPurple),
-            child: Text('Menu', style: TextStyle(color: Colors.white)),
-          ),
-          ListTile(leading: Icon(Icons.person), title: Text('Profile')),
-        ]),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: primaryPurple),
+              child: Text('Menu', style: TextStyle(color: Colors.white)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.explore_outlined),
+              title: const Text('Explore'),
+              onTap: () {
+                setState(() => _currentIndex = 0);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.self_improvement_outlined),
+              title: const Text('Classes'),
+              onTap: () {
+                setState(() => _currentIndex = 1);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.search_outlined),
+              title: const Text('Search'),
+              onTap: () {
+                setState(() => _currentIndex = 2);
+                Navigator.pop(context);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.settings_outlined),
+              title: const Text('Settings'),
+              onTap: () {
+                setState(() => _currentIndex = 3);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
       appBar: _currentIndex == 1
           ? null
