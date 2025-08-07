@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -24,7 +25,11 @@ class AuthRepository {
 
   User? _userFromFirebase(fb.User? user) {
     if (user == null) return null;
-    return User(email: user.email ?? '', isMember: true);
+    return User(
+      email: user.email ?? '',
+      name: user.displayName ?? '',
+      isMember: true,
+    );
   }
 
   Future<void> logIn({required String email, required String password}) async {
@@ -35,14 +40,21 @@ class AuthRepository {
   }
 
   Future<void> logInWithGoogle() async {
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) return;
-    final googleAuth = await googleUser.authentication;
-    final credential = fb.GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    await _firebaseAuth.signInWithCredential(credential);
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        throw Exception('Sign in aborted by user');
+      }
+      final googleAuth = await googleUser.authentication;
+      final credential = fb.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await _firebaseAuth.signInWithCredential(credential);
+    } catch (e, s) {
+      debugPrint('Google sign-in error: $e');
+      Error.throwWithStackTrace(e, s);
+    }
   }
 
   Future<void> logInWithFacebook() async {
