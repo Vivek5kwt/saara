@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
+import 'package:saara/widgets/custom_app_bar.dart';
 import 'class_detail_page.dart';
 import '../cubit/home_cubit.dart';
 import 'classes_page.dart';
@@ -155,22 +156,11 @@ class _HomePageState extends State<HomePage> {
         ),
         appBar: _currentIndex == 1
             ? null
-            : AppBar(
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                elevation: 0,
-                centerTitle: true,
-                title: Text(
-                  titles[_currentIndex],
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
+            : CustomAppBar(
+                title: titles[_currentIndex],
                 leading: Builder(
                   builder: (ctx) => IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                    icon: const Icon(Icons.menu),
                     onPressed: () => Scaffold.of(ctx).openDrawer(),
                   ),
                 ),
@@ -185,10 +175,10 @@ class _HomePageState extends State<HomePage> {
                                 builder: (_) => const NotificationPage()));
                       },
                       child: CircleAvatar(
-                        backgroundColor: primaryPurple.withOpacity(0.1),
+                        backgroundColor: Colors.white.withOpacity(0.1),
                         child: const Icon(
                           Icons.notifications_none,
-                          color: primaryPurple,
+                          color: Colors.white,
                         ),
                       ),
                     ),
