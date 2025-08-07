@@ -159,8 +159,12 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                                 const Icon(Icons.play_arrow, color: Colors.white),
                             onTap: () {
                               final url = _videoUrls[title];
-                              context.push('/video',
-                                  extra: {'title': title, 'url': url});
+                              if (url != null) {
+                                context.push(
+                                  '/video',
+                                  extra: {'title': title, 'url': url},
+                                );
+                              }
                             },
                           );
                         },
