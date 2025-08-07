@@ -67,16 +67,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLoginRequested(
       AuthLoginRequested event, Emitter<AuthState> emit) async {
-    await _repository.logIn(email: event.email, password: event.password);
+    // Temporary bypass: immediately authenticate without checking credentials
+    emit(AuthState.authenticated(User(email: event.email)));
   }
 
   Future<void> _onGoogleLoginRequested(
       AuthGoogleLoginRequested event, Emitter<AuthState> emit) async {
-    try {
-      await _repository.logInWithGoogle();
-    } catch (e) {
-      emit(AuthState.unauthenticated(error: e.toString()));
-    }
+    // Temporary bypass: treat Google sign-in as a success
+    emit(AuthState.authenticated(
+        const User(email: 'google@example.com', name: 'Google User')));
   }
 
   Future<void> _onFacebookLoginRequested(
