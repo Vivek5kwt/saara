@@ -7,6 +7,7 @@ import 'classes_page.dart';
 import 'programs_page.dart';
 import '../../notifications/view/notification_page.dart';
 import '../../settings/view/settings_page.dart';
+import '../../search/view/search_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     final pages = [
       const _ExploreView(),
       const ClassesPage(),
-      const Center(child: Text('Search Page')),
+      const SearchPage(),
       const SettingsPage(),
     ];
     final titles = ['Explore', 'Classes', 'Search', 'Settings'];
