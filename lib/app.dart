@@ -12,6 +12,12 @@ import 'features/video/view/video_page.dart';
 import 'features/onboarding/view/onboarding_page.dart';
 import 'features/splash/view/splash_page.dart';
 import 'features/forgot_password/view/forgot_password_page.dart';
+import 'features/notifications/view/notification_page.dart';
+import 'features/home/view/classes_page.dart';
+import 'features/home/view/programs_page.dart';
+import 'features/home/view/class_detail_page.dart';
+import 'features/home/cubit/home_cubit.dart';
+import 'package:video_player/video_player.dart';
 import 'theme/cubit/theme_cubit.dart';
 
 /// A ChangeNotifier that listens to a Stream and notifies listeners on each event.
@@ -77,6 +83,59 @@ class App extends StatelessWidget {
                 GoRoute(
                   path: '/video',
                   builder: (context, state) => const VideoPage(),
+                ),
+                GoRoute(
+                  path: '/video/fullscreen',
+                  builder: (context, state) {
+                    final controller = state.extra as VideoPlayerController;
+                    return FullScreenVideo(controller: controller);
+                  },
+                ),
+                GoRoute(
+                  path: '/notifications',
+                  builder: (context, state) => const NotificationPage(),
+                ),
+                GoRoute(
+                  path: '/classes',
+                  builder: (context, state) {
+                    final cubit = state.extra as HomeCubit?;
+                    return cubit != null
+                        ? BlocProvider.value(
+                            value: cubit,
+                            child: const ClassesPage(),
+                          )
+                        : BlocProvider(
+                            create: (_) => HomeCubit(),
+                            child: const ClassesPage(),
+                          );
+                  },
+                ),
+                GoRoute(
+                  path: '/programs',
+                  builder: (context, state) {
+                    final cubit = state.extra as HomeCubit?;
+                    return cubit != null
+                        ? BlocProvider.value(
+                            value: cubit,
+                            child: const ProgramsPage(),
+                          )
+                        : BlocProvider(
+                            create: (_) => HomeCubit(),
+                            child: const ProgramsPage(),
+                          );
+                  },
+                ),
+                GoRoute(
+                  path: '/class-detail',
+                  builder: (context, state) {
+                    final data = state.extra as Map<String, dynamic>;
+                    return ClassDetailPage(
+                      title: data['title'] as String,
+                      image: data['image'] as String,
+                      videoCount: data['videoCount'] as int,
+                      description: data['description'] as String,
+                    );
+                  },
                 ),
               ],
               redirect: (context, state) {

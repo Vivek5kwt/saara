@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:saara/features/video/view/video_page.dart';
+import 'package:go_router/go_router.dart';
 
 /// A detailed page for a class, matching the design shown: large header image
 /// with overlay buttons, a bold title, a prominent "Start Watching" button,
@@ -45,7 +45,7 @@ class ClassDetailPage extends StatelessWidget {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
             ),
             actions: [
               IconButton(
@@ -89,12 +89,7 @@ class ClassDetailPage extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const VideoPage(),
-                        ),
-                      ),
+                      onPressed: () => context.push('/video'),
                       icon: const Icon(Icons.play_arrow),
                       label: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 14),
@@ -168,12 +163,7 @@ class ClassDetailPage extends StatelessWidget {
                   child: InkWell(
                     onTap: video.locked
                         ? null
-                        : () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const VideoPage(),
-                      ),
-                    ),
+                        : () => context.push('/video'),
                     child: Row(
                       children: [
                         // Thumbnail with lock and duration overlays

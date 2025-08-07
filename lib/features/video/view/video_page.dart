@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPage extends StatefulWidget {
@@ -92,7 +93,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
               leading: const Icon(Icons.file_download),
               title: const Text('Download'),
               onTap: () {
-                Navigator.pop(ctx);
+                ctx.pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Download tapped')), );
               },
@@ -101,7 +102,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
               leading: const Icon(Icons.share),
               title: const Text('Share'),
               onTap: () {
-                Navigator.pop(ctx);
+                ctx.pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Share tapped')), );
               },
@@ -141,7 +142,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                     backgroundColor: Colors.black38,
                     child: IconButton(
                       icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                     ),
                   ),
               ),
@@ -276,10 +277,9 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                               onPressed: () async {
                                 final wasPlaying = _controller.value.isPlaying;
                                 _hideTimer?.cancel();
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => FullScreenVideo(controller: _controller),
-                                  ),
+                                await context.push(
+                                  '/video/fullscreen',
+                                  extra: _controller,
                                 );
                                 if (wasPlaying) {
                                   _controller.play();
@@ -556,7 +556,7 @@ class FullScreenVideo extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
-        onTap: () => Navigator.pop(context),
+        onTap: () => context.pop(),
         child: Center(
           child: AspectRatio(
             aspectRatio:

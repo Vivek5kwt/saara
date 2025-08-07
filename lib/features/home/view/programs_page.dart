@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:saara/widgets/custom_app_bar.dart';
 import '../cubit/home_cubit.dart';
-import 'class_detail_page.dart';
 
 class ProgramsPage extends StatelessWidget {
   const ProgramsPage({super.key});
@@ -23,19 +23,12 @@ class ProgramsPage extends StatelessWidget {
             leading: Image.asset(item.image, width: 60, fit: BoxFit.cover),
             title: Text(item.title),
             subtitle: Text(item.subtitle),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ClassDetailPage(
-                    title: item.title,
-                    image: item.image,
-                    videoCount: videoCount,
-                    description: '',
-                  ),
-                ),
-              );
-            },
+            onTap: () => context.push('/class-detail', extra: {
+              'title': item.title,
+              'image': item.image,
+              'videoCount': videoCount,
+              'description': '',
+            }),
           );
         },
       ),
