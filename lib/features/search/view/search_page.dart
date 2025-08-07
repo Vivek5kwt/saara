@@ -1,6 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
-/// A simple search interface that filters a static list of video titles.
+/// A creative search experience with animated results and quick suggestions.
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -8,7 +10,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
 
   /// Example list of video titles. In a real app this could come from a backend
@@ -24,69 +26,130 @@ class _SearchPageState extends State<SearchPage> {
 
   List<String> _filtered = const [];
 
+  late final AnimationController _fadeController;
+  late final Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
     _controller.addListener(_onSearchChanged);
+    _fadeController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut);
   }
 
   @override
   void dispose() {
     _controller.removeListener(_onSearchChanged);
     _controller.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
   void _onSearchChanged() {
     final query = _controller.text.toLowerCase();
+    final results = query.isEmpty
+        ? const []
+        : _allVideos.where((v) => v.toLowerCase().contains(query)).toList();
     setState(() {
-      _filtered = query.isEmpty
-          ? const []
-          : _allVideos
-              .where((v) => v.toLowerCase().contains(query))
-              .toList();
+      _filtered = results;
     });
+    if (_filtered.isNotEmpty) {
+      _fadeController.forward();
+    } else {
+      _fadeController.reverse();
+    }
+  }
+
+  void _useSuggestion(String text) {
+    _controller.text = text;
+    _controller.selection = TextSelection.fromPosition(TextPosition(offset: text.length));
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            child: Center(
-              child: TextField(
-                controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: 'Search videos',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFA78BFA), Color(0xFF6C63FF)],
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: TextField(
+                    controller: _controller,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Search videos',
+                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.15),
+                      prefixIcon: const Icon(Icons.search, color: Colors.white),
+                      border: InputBorder.none,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: _filtered.isEmpty
-                ? const Center(child: Text('No results'))
-                : ListView.builder(
-                    itemCount: _filtered.length,
-                    itemBuilder: (context, index) {
-                      final title = _filtered[index];
-                      return ListTile(
-                        title: Text(title),
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Selected "$title"')),
+            if (_controller.text.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 8,
+                  children: _allVideos.take(4).map((s) {
+                    return ActionChip(
+                      label: Text(s),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      backgroundColor: Colors.white.withOpacity(0.15),
+                      onPressed: () => _useSuggestion(s),
+                    );
+                  }).toList(),
+                ),
+              ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: _filtered.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No results',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      )
+                    : ListView.separated(
+                        itemCount: _filtered.length,
+                        separatorBuilder: (_, __) => const Divider(
+                          color: Colors.white24,
+                          height: 1,
+                        ),
+                        itemBuilder: (context, index) {
+                          final title = _filtered[index];
+                          return ListTile(
+                            title: Text(title, style: const TextStyle(color: Colors.white)),
+                            trailing: const Icon(Icons.play_arrow, color: Colors.white),
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Selected "$title"')),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
-          ),
-        ],
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
